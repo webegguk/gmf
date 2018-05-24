@@ -1,0 +1,15 @@
+{
+  "name": "gmf",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "http://webegguk.github.io/gmf",
+  "dependencies": {
+  },
+  "scripts": {
+    "predeploy": "",
+    "deploy": "gh-pages -d src"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.1.0"
+  }
+}
