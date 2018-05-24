@@ -10,6 +10,11 @@
     text-align: left;
 }
 
+select.ui.dropdown {
+    height: 45px;
+    font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
 /* Optional: Makes the sample page fill the window. */
 
 html,

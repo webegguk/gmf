@@ -51,6 +51,8 @@ function initMap() {
     center: { lat: 0, lng: 0 },
     zoom: 3
   });
+  // empty form values in event of browser refresh
+  resetForm();
   // initialise other functionality for the app
   applyMarkers();
   selectVehicle(vIds);
@@ -102,8 +104,10 @@ function selectVehicle(vehicles) {
     select.appendChild(el);
   }
   select.onchange = function (e) {
+    // set global current id value
     currId = e.target.value
     var currVeh = {};
+    // populate current vehicle data with correct object
     Object.keys(window.vehicles).forEach(function (key) {
       if (key === currId) { currVeh = window.vehicles[key] };
     });
@@ -112,12 +116,13 @@ function selectVehicle(vehicles) {
     fLat.value = currVeh.Lat;
     fLng.value = currVeh.Lon;
     fSpeed.value = currVeh.SpeedKmh;
+    //center in on current vehicle coordinates
     map.setCenter(new google.maps.LatLng(currVeh.Lat, currVeh.Lon));
     map.setZoom(12);
+    // if default select option id chosen, reset everything
     if (currId === "0") {
       map.fitBounds(bounds);
-
-      fName.value = fEvent.value = fLat.value = fLng.value = fSpeed.value = '';
+      resetForm();
     }
   }
 }
@@ -128,7 +133,8 @@ function selectVehicle(vehicles) {
 var form = document.getElementById("form");
 form.onsubmit = function (e) {
   e.preventDefault();
-  if (currId != undefined) {
+  // if there is a current Id set put current data from the form into the database
+  if (currId != (undefined || 0)) {
     var itemsRef = firebase.database()
       .ref('LastReportedEvent/' + currId);
     itemsRef.set({
@@ -139,6 +145,9 @@ form.onsubmit = function (e) {
       SpeedKmh: fSpeed.value,
     }).then(function () {
       console.log('Synchronization succeeded');
+      // once data is in the database, update the App with the correct values 
+      window.vehicles[currId].Lat = fLat.value;
+      window.vehicles[currId].Lon = fLng.value
       markerStore[currId].setPosition(new google.maps.LatLng(fLat.value, fLng.value));
 
       bounds.extend(new google.maps.LatLng(fLat.value, fLng.value));
@@ -178,4 +187,8 @@ function watchChanges() {
       map.setCenter(new google.maps.LatLng(fLat.value, fLng.value));
     }
   });
+}
+
+function resetForm(){
+  fName.value = fEvent.value = fLat.value = fLng.value = fSpeed.value = '';
 }
